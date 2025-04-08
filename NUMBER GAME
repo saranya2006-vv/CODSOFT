@@ -1,0 +1,78 @@
+import java.util.Scanner;
+import java.util.Random;
+
+public class NumberGuessingGame {
+    private static final int MAX_NUMBER = 100;
+    private static final int MAX_ATTEMPTS = 10;
+    private static int totalRounds = 0;
+    private static int totalWins = 0;
+    private static int bestScore = Integer.MAX_VALUE;
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Random random = new Random();
+        
+        System.out.println("Welcome to the Number Guessing Game!");
+        System.out.println("I'm thinking of a number between 1 and " + MAX_NUMBER);
+        
+        boolean playAgain = true;
+        
+        while (playAgain) {
+            int secretNumber = random.nextInt(MAX_NUMBER) + 1;
+            int attempts = 0;
+            boolean hasWon = false;
+            
+            System.out.println("\n=== New Round ===");
+            System.out.println("You have " + MAX_ATTEMPTS + " attempts to guess the number.");
+            
+            while (attempts < MAX_ATTEMPTS && !hasWon) {
+                System.out.print("Attempt " + (attempts + 1) + "/" + MAX_ATTEMPTS + " - Enter your guess: ");
+                
+                try {
+                    int guess = scanner.nextInt();
+                    attempts++;
+                    
+                    if (guess == secretNumber) {
+                        hasWon = true;
+                        totalWins++;
+                        if (attempts < bestScore) {
+                            bestScore = attempts;
+                        }
+                        System.out.println("Congratulations! You guessed the number in " + attempts + " attempts!");
+                    } else if (guess < secretNumber) {
+                        System.out.println("Too low! Try a higher number.");
+                    } else {
+                        System.out.println("Too high! Try a lower number.");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Please enter a valid number!");
+                    scanner.next(); // clear the invalid input
+                }
+            }
+            
+            totalRounds++;
+            
+            if (!hasWon) {
+                System.out.println("Sorry, you've used all your attempts. The number was " + secretNumber + ".");
+            }
+            
+            System.out.println("\nYour current stats:");
+            System.out.println("Rounds played: " + totalRounds);
+            System.out.println("Rounds won: " + totalWins);
+            System.out.println("Best score (fewest guesses): " + (bestScore == Integer.MAX_VALUE ? "N/A" : bestScore));
+            
+            System.out.print("\nWould you like to play again? (yes/no): ");
+            String playAgainResponse = scanner.next().toLowerCase();
+            playAgain = playAgainResponse.equals("yes") || playAgainResponse.equals("y");
+        }
+        
+        System.out.println("\nThanks for playing! Final stats:");
+        System.out.println("Total rounds played: " + totalRounds);
+        System.out.println("Rounds won: " + totalWins);
+        if (bestScore != Integer.MAX_VALUE) {
+            System.out.println("Your best score: " + bestScore + " guesses");
+        }
+        
+        scanner.close();
+    }
+}
