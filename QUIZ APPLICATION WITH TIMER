@@ -1,0 +1,82 @@
+import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class QuizApp {
+    private static int score = 0;
+    private static int questionIndex = 0;
+    private static boolean timeOut = false;
+
+    // Quiz questions, options, and answers
+    private static String[] questions = {
+            "What is the capital of India?",
+            "Which planet is known as the Red Planet?",
+            "Who wrote 'Hamlet'?"
+    };
+    private static String[][] options = {
+            {"1. Mumbai", "2. Delhi", "3. Kolkata", "4. Chennai"},
+            {"1. Earth", "2. Mars", "3. Jupiter", "4. Saturn"},
+            {"1. Charles Dickens", "2. William Shakespeare", "3. Mark Twain", "4. Jane Austen"}
+    };
+    private static int[] correctAnswers = {2, 2, 2}; // Correct option numbers
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (questionIndex < questions.length) {
+            System.out.println("\nQuestion " + (questionIndex + 1) + ": " + questions[questionIndex]);
+            for (String option : options[questionIndex]) {
+                System.out.println(option);
+            }
+
+            Timer timer = new Timer();
+            timeOut = false; // Reset timeout flag for each question
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    timeOut = true;
+                    System.out.println("\nTime's up! Moving to the next question...");
+                    questionIndex++;
+                    if (questionIndex >= questions.length) {
+                        showResults();
+                        System.exit(0);
+                    }
+                }
+            }, 15000); // 15-second timer
+
+            System.out.println("You have 15 seconds to answer! Enter your answer:");
+            int userAnswer = -1;
+
+            // Ensure input validation and handle timeout
+            while (!timeOut && scanner.hasNext()) {
+                if (scanner.hasNextInt()) {
+                    userAnswer = scanner.nextInt();
+                    break;
+                } else {
+                    System.out.println("Please enter a valid number!");
+                    scanner.next(); // Clear invalid input
+                }
+            }
+            timer.cancel();
+
+            if (!timeOut && userAnswer == correctAnswers[questionIndex]) {
+                System.out.println("Correct!");
+                score++;
+            } else if (!timeOut) {
+                System.out.println("Wrong answer.");
+            }
+
+            questionIndex++;
+        }
+
+        showResults();
+        scanner.close();
+    }
+
+    // Display final results
+    private static void showResults() {
+        System.out.println("\nQuiz Completed!");
+        System.out.println("Your final score: " + score + "/" + questions.length);
+        System.out.println("Thanks for playing!");
+    }
+}
